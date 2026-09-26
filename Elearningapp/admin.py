@@ -10,5 +10,5 @@ admin.site.register(courseassign)
 admin.site.register(my_batch)
 admin.site.register(upload_lecture)
 admin.site.register(LiveClass)
-
+admin.site.register(payment)
 # Register your models here.

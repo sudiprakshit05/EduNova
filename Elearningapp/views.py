@@ -12,11 +12,16 @@ from django.shortcuts import get_object_or_404
 from .token04 import generate_token04
 from datetime import datetime
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 
-
+import requests
 import random
 import uuid
 import os
+import json
+import base64
+import hashlib
+import hmac
 
 from django.contrib.auth.models import User
 
@@ -303,10 +308,32 @@ def join_now(request):
     if(request.method=='POST'):
         name=request.POST['name']
         email=request.POST['email']
-        phone=request.POST['phone']
+        phone=request.POST['phone'].strip()  # Remove leading and trailing whitespace from the phone number 
         password=request.POST['password']
         school_college=request.POST['school_college']
         address=request.POST['address']
+
+         # Validate Indian phone number
+        phone = phone.replace(" ", "")
+        phone = phone.replace("-", "")
+        phone = phone.replace("(", "")
+        phone = phone.replace(")", "")
+
+        # Convert +91XXXXXXXXXX to XXXXXXXXXX
+        if phone.startswith("+91"):
+            phone = phone[3:]
+
+        # Convert 91XXXXXXXXXX to XXXXXXXXXX
+        elif phone.startswith("91") and len(phone) == 12:
+            phone = phone[2:]
+
+        # Check for valid 10-digit Indian mobile number
+        if len(phone) != 10 or not phone.isdigit() or phone[0] not in "6789":
+            messages.error(
+                request,
+                "Please enter a valid 10-digit Indian mobile number."
+            )
+            return redirect("join_now")
         # Check if email already exists
         if elearning_users.objects.filter(email=email).exists():
             messages.error(request, "Email already registered.")
@@ -523,6 +550,485 @@ def before_payment(request,id):
     else:  
         return redirect('/user_login')  # Redirect to login page if user is not logged in      
     
+def create_cashfree_order(request, id):
+
+    if not request.session.has_key('email'):
+        return redirect('/user_login')
+
+    course1 = get_object_or_404(course, id=id)
+
+    eid = request.session['email']
+    user = get_object_or_404(elearning_users, email=eid)
+
+    # Check if user already purchased this course
+    existing_batch = my_batch.objects.filter(
+        course_id=id,
+        user_email=user.email,
+        status="Active"
+    ).exists()
+
+    if existing_batch:
+        return JsonResponse({
+            "success": False,
+            "already_purchased": True,
+            "message": "You have already purchased this course."
+        }, status=400)
+
+    order_id = "edunova_" + uuid.uuid4().hex[:20]
+
+    url = "https://sandbox.cashfree.com/pg/orders"
+
+    headers = {
+        "Content-Type": "application/json",
+        "x-api-version": "2025-01-01",
+        "x-client-id": settings.CASHFREE_APP_ID,
+        "x-client-secret": settings.CASHFREE_SECRET_KEY,
+        "x-idempotency-key": str(uuid.uuid4())
+    }
+
+    payload = {
+        "order_id": order_id,
+        "order_amount": float(course1.price),
+        "order_currency": "INR",
+
+        "customer_details": {
+            "customer_id": str(user.id),
+            "customer_name": user.name,
+            "customer_email": user.email,
+            "customer_phone": str(user.phone)
+        },
+
+        "order_meta": {
+            "return_url": (
+                request.build_absolute_uri(
+                    "/cashfree/payment-success/"
+                ) + "?order_id={order_id}"
+            ),
+            "notify_url": "https://tuition-recycled-felt-tip.ngrok-free.dev/cashfree/webhook/"
+        },
+
+        "order_note": "EduNova Course Payment"
+    }
+
+    response = requests.post(
+        url,
+        headers=headers,
+        json=payload
+    )
+
+    if response.status_code not in [200, 201]:
+        print("CASHFREE ORDER ERROR:", response.status_code)
+        print("CASHFREE RESPONSE:", response.text)
+
+        return JsonResponse({
+            "success": False,
+            "error": response.text
+        }, status=response.status_code)
+
+    data = response.json()
+    # Save payment information in database
+    payment.objects.create(
+        order_id=data['order_id'],
+        user_email=user.email,
+        course_id=id,
+        amount=course1.price,
+        payment_status="PENDING"
+    )
+
+    request.session['cashfree_order_id'] = data['order_id']
+    # request.session['cashfree_course_id'] = id
+    # request.session['cashfree_user_email'] = user.email
+
+    return JsonResponse({
+        "success": True,
+        "order_id": data['order_id'],
+        "payment_session_id": data['payment_session_id']
+    })
+
+@csrf_exempt
+def cashfree_webhook(request):
+
+    if request.method != "POST":
+        return JsonResponse({
+            "success": False,
+            "message": "Only POST requests are allowed"
+        }, status=405)
+
+    # Get Cashfree webhook headers
+    signature = request.headers.get("x-webhook-signature")
+    timestamp = request.headers.get("x-webhook-timestamp")
+
+    if not signature or not timestamp:
+        return JsonResponse({
+            "success": False,
+            "message": "Missing webhook signature"
+        }, status=400)
+
+    # Get raw request body
+    raw_body = request.body.decode("utf-8")
+
+    # Create signature using Cashfree secret key
+    signed_payload = timestamp + raw_body
+
+    generated_signature = base64.b64encode(
+        hmac.new(
+            settings.CASHFREE_SECRET_KEY.encode("utf-8"),
+            signed_payload.encode("utf-8"),
+            hashlib.sha256
+        ).digest()
+    ).decode("utf-8")
+
+    # Verify webhook signature
+    if not hmac.compare_digest(
+        generated_signature,
+        signature
+    ):
+        return JsonResponse({
+            "success": False,
+            "message": "Invalid webhook signature"
+        }, status=401)
+
+    # Convert JSON into Python dictionary
+    data = json.loads(raw_body)
+
+    # Get webhook data
+    webhook_data = data.get("data", {})
+
+    order_data = webhook_data.get("order", {})
+    payment_data = webhook_data.get("payment", {})
+
+    order_id = order_data.get("order_id")
+    payment_status = payment_data.get("payment_status")
+    payment_amount = payment_data.get("payment_amount")
+    cf_payment_id = payment_data.get("cf_payment_id")
+
+    # Validate required data
+    if not order_id:
+        return JsonResponse({
+            "success": False,
+            "message": "Order ID missing"
+        }, status=400)
+
+    if not payment_status:
+        return JsonResponse({
+            "success": False,
+            "message": "Payment status missing"
+        }, status=400)
+
+    # Find our Payment record
+    payment_record = payment.objects.filter(
+        order_id=order_id
+    ).first()
+
+    if not payment_record:
+        return JsonResponse({
+            "success": False,
+            "message": "Payment record not found"
+        }, status=404)
+
+    # Idempotency:
+    # If this payment was already processed successfully,
+    # do nothing again.
+    if payment_record.payment_status == "SUCCESS":
+        return JsonResponse({
+            "success": True,
+            "message": "Payment already processed",
+            "order_id": order_id
+        })
+
+    # Handle failed payment
+    if payment_status == "FAILED":
+
+        payment_record.payment_status = "FAILED"
+        payment_record.cf_payment_id = cf_payment_id
+        payment_record.save()
+
+        return JsonResponse({
+            "success": True,
+            "message": "Payment marked as failed",
+            "order_id": order_id
+        })
+
+    # Only process successful payments
+    if payment_status != "SUCCESS":
+
+        payment_record.payment_status = "PENDING"
+        payment_record.save()
+
+        return JsonResponse({
+            "success": True,
+            "message": "Payment status received",
+            "order_id": order_id
+        })
+
+    # Make sure payment amount exists
+    if payment_amount is None:
+        return JsonResponse({
+            "success": False,
+            "message": "Payment amount missing"
+        }, status=400)
+
+    # Verify amount
+    if float(payment_amount) != float(payment_record.amount):
+        return JsonResponse({
+            "success": False,
+            "message": "Payment amount mismatch"
+        }, status=400)
+
+    # Payment is valid and successful
+    payment_record.payment_status = "SUCCESS"
+    payment_record.cf_payment_id = cf_payment_id
+    payment_record.save()
+
+    # Get course and user information from our database
+    course_id = payment_record.course_id
+    user_email = payment_record.user_email
+
+    course1 = get_object_or_404(
+        course,
+        id=course_id
+    )
+
+    # Check whether the student is already enrolled
+    existing_batch = my_batch.objects.filter(
+        course_id=course_id,
+        user_email=user_email
+    ).first()
+
+    # Create enrollment only once
+    if not existing_batch:
+
+        course_taken_date = datetime.now().strftime(
+            '%Y-%m-%d'
+        )
+
+        my_batch1 = my_batch(
+            course_id=course_id,
+            user_email=user_email,
+            course_taken_date=course_taken_date,
+            status="Active"
+        )
+
+        my_batch1.save()
+
+    return JsonResponse({
+        "success": True,
+        "message": "Payment processed successfully",
+        "order_id": order_id
+    })
+
+def cashfree_payment_success(request):
+
+    order_id = request.GET.get("order_id")
+
+    if not order_id:
+        return JsonResponse({
+            "success": False,
+            "message": "Order ID is missing"
+        }, status=400)
+
+    # Get payment information stored when order was created
+    session_order_id = request.session.get("cashfree_order_id")
+
+    # Make sure this order belongs to this browser session
+    if session_order_id != order_id:
+        return JsonResponse({
+            "success": False,
+            "message": "Invalid payment session"
+        }, status=403)
+
+    # Get payment record from database
+    payment_record = payment.objects.filter(
+        order_id=order_id
+    ).first()
+
+    if not payment_record:
+        return JsonResponse({
+            "success": False,
+            "message": "Payment record not found"
+        }, status=404)
+
+    # Prevent processing the same successful payment again
+    if payment_record.payment_status == "SUCCESS":
+        return redirect('/user_dashboard')
+
+    # Ask Cashfree for payment status
+    url = f"https://sandbox.cashfree.com/pg/orders/{order_id}/payments"
+
+    headers = {
+        "Content-Type": "application/json",
+        "x-api-version": "2025-01-01",
+        "x-client-id": settings.CASHFREE_APP_ID,
+        "x-client-secret": settings.CASHFREE_SECRET_KEY
+    }
+
+    response = requests.get(
+        url,
+        headers=headers
+    )
+
+    if response.status_code != 200:
+        return JsonResponse({
+            "success": False,
+            "message": "Unable to verify payment",
+            "error": response.json()
+        }, status=response.status_code)
+
+    payments = response.json()
+
+    # Find payment status
+    successful_payment = None
+    failed_payment = None
+    pending_payment = None
+
+    for Pay in payments:
+
+        status = Pay.get("payment_status")
+
+        if status == "SUCCESS":
+            successful_payment = Pay
+            break
+
+        elif status == "FAILED":
+            failed_payment = Pay
+
+        elif status == "PENDING":
+            pending_payment = Pay
+
+    # =====================================================
+    # PAYMENT SUCCESS
+    # =====================================================
+
+    if successful_payment:
+
+        cashfree_amount = successful_payment.get("payment_amount")
+
+        if cashfree_amount is None:
+            return JsonResponse({
+                "success": False,
+                "payment_verified": False,
+                "message": "Payment amount not found"
+            }, status=400)
+
+        # Verify payment amount
+        if float(cashfree_amount) != float(payment_record.amount):
+            return JsonResponse({
+                "success": False,
+                "payment_verified": False,
+                "message": "Payment amount mismatch"
+            }, status=400)
+
+        # Update payment record
+        payment_record.payment_status = "SUCCESS"
+        payment_record.cf_payment_id = successful_payment.get(
+            "cf_payment_id"
+        )
+        payment_record.save()
+
+        # Get course and user information
+        course_id = payment_record.course_id
+        user_email = payment_record.user_email
+
+        course1 = get_object_or_404(
+            course,
+            id=course_id
+        )
+
+        # Check whether this course is already enrolled
+        existing_batch = my_batch.objects.filter(
+            course_id=course_id,
+            user_email=user_email
+        ).first()
+
+        # Create enrollment only once
+        if not existing_batch:
+
+            course_taken_date = datetime.now().strftime(
+                '%Y-%m-%d'
+            )
+
+            my_batch1 = my_batch(
+                course_id=course_id,
+                user_email=user_email,
+                course_taken_date=course_taken_date,
+                status="Active"
+            )
+
+            my_batch1.save()
+
+        # Remove temporary payment information
+        request.session.pop(
+            'cashfree_order_id',
+            None
+        )
+
+        request.session.pop(
+            'cashfree_course_id',
+            None
+        )
+
+        request.session.pop(
+            'cashfree_user_email',
+            None
+        )
+
+        return redirect('/user_dashboard')
+
+    # =====================================================
+    # PAYMENT FAILED
+    # =====================================================
+
+    if failed_payment:
+
+        payment_record.payment_status = "FAILED"
+        payment_record.cf_payment_id = failed_payment.get(
+            "cf_payment_id"
+        )
+        payment_record.save()
+
+        return render(
+            request,
+            "payment_faield.html",
+            {
+                "order_id": order_id,
+                "course_id": payment_record.course_id
+            }
+        )
+
+    # =====================================================
+    # PAYMENT PENDING
+    # =====================================================
+
+    if pending_payment:
+
+        payment_record.payment_status = "PENDING"
+        payment_record.save()
+
+        return render(
+            request,
+            "pending_payment.html",
+            {
+                "order_id": order_id,
+                "course_id": payment_record.course_id
+            }
+        )
+
+    # =====================================================
+    # UNKNOWN / NO PAYMENT STATUS
+    # =====================================================
+
+    payment_record.payment_status = "PENDING"
+    payment_record.save()
+
+    return render(
+        request,
+        "payment_pending.html",
+        {
+            "order_id": order_id,
+            "course_id": payment_record.course_id
+        }
+    )
+
 def user_profile_master(request):
     if request.session.has_key('email'):
         eid=request.session['email']# Get the email of the logged-in user from the session 

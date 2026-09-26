@@ -89,30 +89,56 @@
                 </div>
                 <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
                 <div class="col-lg-8 col-md-12 wow fadeInUp" data-wow-delay="0.5s">
-                    <form method="post" action="/before_payment/{{ course.id }}">
-                        {% csrf_token %}
+                    <form id="payment-form">
+                     {% csrf_token %}
+
                         <div class="row g-3">
+
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" name="name" placeholder="Your Name" readonly value="{{ user.name }}">
+                                    <input type="text"
+                                        class="form-control"
+                                        name="name"
+                                        placeholder="Your Name"
+                                        readonly
+                                        value="{{ user.name }}">
                                     <label for="name">Your Name</label>
                                 </div>
                             </div>
+
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="email" class="form-control" name="email" placeholder="Your Email" readonly value="{{ user.email }}">
+                                    <input type="email"
+                                        class="form-control"
+                                        name="email"
+                                        placeholder="Your Email"
+                                        readonly
+                                        value="{{ user.email }}">
                                     <label for="email">Your Email</label>
                                 </div>
                             </div>
+
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" name="phone" placeholder="Phone Number" readonly value="{{ user.phone }}">
+                                    <input type="text"
+                                        class="form-control"
+                                        name="phone"
+                                        placeholder="Phone Number"
+                                        readonly
+                                        value="{{ user.phone }}">
                                     <label for="phone">Phone Number</label>
                                 </div>
                             </div>
+
                             <div class="col-6">
-                                <button class="btn btn-primary w-100 py-3" type="submit">enroll Now</button>
+                                <button
+                                    class="btn btn-primary w-100 py-3"
+                                    type="button"
+                                    id="pay-button">
+                                    Pay Now
+                                </button>
                             </div>
+
                         </div>
                     </form>
                 </div>
@@ -285,8 +311,71 @@
     <script src="{% static 'web_assets/lib/wow/wow.min.js' %}"></script>
     <script src="{% static 'web_assets/lib/easing/easing.min.js' %}"></script>
     <script src="{% static 'web_assets/lib/waypoints/waypoints.min.js' %}"></script>
+    <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
     <script src="{% static 'web_assets/lib/owlcarousel/owl.carousel.min.js' %}"></script>
+    <!-- Cashfree Payment -->
+<script>
+    console.log("Checking Cashfree:", typeof Cashfree);
 
+    const cashfree = Cashfree({
+        mode: "sandbox"
+    });
+
+    document.getElementById("pay-button").addEventListener("click", async function () {
+
+        const button = this;
+
+        button.disabled = true;
+        button.innerText = "Processing...";
+
+        try {
+
+            const response = await fetch(
+                "{% url 'create_cashfree_order' course.id %}",
+                {
+                    method: "GET",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                }
+            );
+
+            const data = await response.json();
+
+            console.log("Cashfree response:", data);
+
+            if (!data.success) {
+                if (data.already_purchased) {
+                    alert("You have already purchased this course.");
+                    return;
+                }
+                alert("Unable to create payment order.");
+
+                console.error(data.error);
+
+                button.disabled = false;
+                button.innerText = "Pay Now";
+
+                return;
+            }
+
+            cashfree.checkout({
+                paymentSessionId: data.payment_session_id,
+                redirectTarget: "_self"
+            });
+
+        } catch (error) {
+
+            console.error("Payment error:", error);
+
+            alert("Something went wrong while starting the payment.");
+
+            button.disabled = false;
+            button.innerText = "Pay Now";
+        }
+
+    });
+</script>
     <!-- Template Javascript -->
     <script src="{% static 'web_assets/js/main.js' %}"></script>
 </body>

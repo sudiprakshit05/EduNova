@@ -55,6 +55,8 @@ urlpatterns=[
     path('generate_zego_token/<int:id>/',views.generate_zego_token,name='generate_zego_token'),
     path('teacher_live_class/<int:id>/',views.teacher_live_class,name='teacher_live_class'),
     path('student_live_class/<int:id>/',views.student_live_class,name='student_live_class'),
-    path('generate_student_zego_token/<int:id>/',views.generate_student_zego_token,name='generate_student_zego_token')
-    ]
-
+    path('generate_student_zego_token/<int:id>/',views.generate_student_zego_token,name='generate_student_zego_token'),
+    path("create-cashfree-order/<int:id>/",views.create_cashfree_order,name="create_cashfree_order"),
+    path("cashfree/webhook/",views.cashfree_webhook,name="cashfree_webhook"),
+    path("cashfree/payment-success/",views.cashfree_payment_success,name="cashfree_payment_success")
+]

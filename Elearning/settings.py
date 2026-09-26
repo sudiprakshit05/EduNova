@@ -30,7 +30,11 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    "tuition-recycled-felt-tip.ngrok-free.dev",
+    ]
 
 
 # Application definition
@@ -143,3 +147,8 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD') # App password generated 
 
 ZEGO_APP_ID = int(os.getenv('ZEGO_APP_ID')) 
 ZEGO_SERVER_SECRET = os.getenv('ZEGO_SERVER_SECRET')
+
+CASHFREE_APP_ID = os.getenv('CASHFREE_APP_ID')
+CASHFREE_SECRET_KEY = os.getenv('CASHFREE_SECRET_KEY')
+CASHFREE_ENVIRONMENT = os.getenv("CASHFREE_ENVIRONMENT", "sandbox")
+CASHFREE_API_VERSION = "2025-01-01"
