@@ -145,8 +145,6 @@ EMAIL_USE_TLS = True # Enable TLS encryption for secure email transmission
 EMAIL_HOST_USER =os.getenv('EMAIL_HOST_USER') # sender's Gmail email address 
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD') # App password generated for the email account 
 
-ZEGO_APP_ID = int(os.getenv('ZEGO_APP_ID')) 
-ZEGO_SERVER_SECRET = os.getenv('ZEGO_SERVER_SECRET')
 
 CASHFREE_APP_ID = os.getenv('CASHFREE_APP_ID')
 CASHFREE_SECRET_KEY = os.getenv('CASHFREE_SECRET_KEY')

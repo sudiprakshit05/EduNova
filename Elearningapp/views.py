@@ -435,7 +435,11 @@ def user_logout(request):
 #     return render(request,'courses.html',{'course':course1})        
 def course_details(request,id):
     course1=course.objects.get(id=id)
-    return render(request,'course_details.html',{'course':course1})
+    coursename=course1.name
+    course_assign1=courseassign.objects.filter(course_assigned=coursename)
+    teacherid_list = [assign.teacherid for assign in course_assign1] # Get a list of teacher IDs assigned to this course
+    Teachers = teacher.objects.filter(id__in=teacherid_list) # Get the teacher objects based on the list of IDs
+    return render(request,'course_details.html',{'course':course1, 'teachers': Teachers})
 
 def course_assign(request,id):
     if not request.session.get('adminemail'):
@@ -1376,288 +1380,170 @@ def create_live_class(request, id):
 
         return redirect('/teachers_login')
 
-def generate_zego_token(request, id):
+# def teacher_live_class(request, id):
+#     # Check teacher login
+#     if not request.session.has_key('email'):
+#         messages.error(request, 'Please login!')
+#         return redirect('/teachers_login')
 
-    # Check whether teacher is logged in
-    if not request.session.has_key('email'):
-        return JsonResponse({
-            'success': False,
-            'message': 'Please login first.'
-        }, status=401)
+#     # Get logged-in teacher
+#     email = request.session['email']
 
-    # Get logged-in teacher
-    email = request.session['email']
+#     try:
+#         Teacher = teacher.objects.get(email=email)
+#     except teacher.DoesNotExist:
+#         messages.error(request, 'Teacher account not found!')
+#         return redirect('/teachers_login')
 
-    try:
-        Teacher = teacher.objects.get(email=email)
-    except teacher.DoesNotExist:
-        return JsonResponse({
-            'success': False,
-            'message': 'Teacher account not found.'
-        }, status=404)
+#     # Get live class belonging to this teacher
+#     try:
+#         live_class = LiveClass.objects.get(
+#             id=id,
+#             teacher=Teacher
+#         )
+#     except LiveClass.DoesNotExist:
+#         messages.error(request, 'Live class not found!')
+#         return redirect('/teachers_login')
 
-    # Get the live class
-    try:
-        live_class = LiveClass.objects.get(
-            id=id,
-            teacher=Teacher
-        )
-    except LiveClass.DoesNotExist:
-        return JsonResponse({
-            'success': False,
-            'message': 'Live class not found.'
-        }, status=404)
+#     # Check live class timing
+#     now = datetime.now()
 
-    # Get ZEGOCLOUD credentials from settings.py
-    app_id = int(settings.ZEGO_APP_ID)
-    server_secret = settings.ZEGO_SERVER_SECRET
+#     start_datetime = datetime.combine(
+#         live_class.scheduled_date,
+#         live_class.start_time
+#     )
 
-    # Create ZEGOCLOUD user ID
-    user_id = "teacher_" + str(Teacher.id)
+#     end_datetime = datetime.combine(
+#         live_class.scheduled_date,
+#         live_class.end_time
+#     )
 
-    # Teacher's name
-    user_name = Teacher.name
+#     # Class has already ended
+#     if now > end_datetime:
 
-    # Generate Token04
-    try:
+#         messages.error(
+#             request,
+#             'This live class has already ended.'
+#         )
 
-        token = generate_token04(
-            app_id,
-            user_id,
-            server_secret,
-            3600,
-            ""
-        )
+#         return redirect(
+#             '/teacher_view_batch/' + str(live_class.course.id)
+#         )
 
-    except Exception as e:
-
-        print("ZEGOCLOUD TOKEN ERROR:", e)
-
-        return JsonResponse({
-            'success': False,
-            'message': 'Unable to generate ZEGOCLOUD token.'
-        }, status=500)
-
-    # Send token information to browser
-    return JsonResponse({
-        'success': True,
-        'token': token,
-        'app_id': app_id,
-        'room_id': live_class.room_id,
-        'user_id': user_id,
-        'user_name': user_name
-    })
-
+#     # Open teacher live class page
+#     return render(
+#         request,
+#         'teacher_live_class.html',
+#         {
+#             'Teacher': Teacher,
+#             'live_class': live_class
+#         }
+#     )
 def teacher_live_class(request, id):
-
-    # Check teacher login
-    if not request.session.has_key('email'):
-        messages.error(request, 'Please login!')
-        return redirect('/teachers_login')
-
-    # Get logged-in teacher
-    email = request.session['email']
+    if 'email' not in request.session:
+        return redirect('teachers_login')
 
     try:
-        Teacher = teacher.objects.get(email=email)
-    except teacher.DoesNotExist:
-        messages.error(request, 'Teacher account not found!')
-        return redirect('/teachers_login')
+        Teacher = teacher.objects.get(email=request.session['email'])
+        live_class = LiveClass.objects.get(id=id, teacher=Teacher)
+    except (teacher.DoesNotExist, LiveClass.DoesNotExist):
+        return redirect('teacherdashboard')
 
-    # Get live class belonging to this teacher
-    try:
-        live_class = LiveClass.objects.get(
-            id=id,
-            teacher=Teacher
-        )
-    except LiveClass.DoesNotExist:
-        messages.error(request, 'Live class not found!')
-        return redirect('/teachers_login')
+    room_name = f"EduNovaLive_{live_class.id}"
 
-    # Check live class timing
-    now = datetime.now()
-
-    start_datetime = datetime.combine(
-        live_class.scheduled_date,
-        live_class.start_time
-    )
-
-    end_datetime = datetime.combine(
-        live_class.scheduled_date,
-        live_class.end_time
-    )
-
-    # Class has already ended
-    if now > end_datetime:
-
-        messages.error(
-            request,
-            'This live class has already ended.'
-        )
-
-        return redirect(
-            '/teacher_view_batch/' + str(live_class.course.id)
-        )
-
-    # Open teacher live class page
     return render(
         request,
         'teacher_live_class.html',
         {
             'Teacher': Teacher,
-            'live_class': live_class
+            'live_class': live_class,
+            'room_name': room_name,
         }
     )
+# def student_live_class(request, id):
+
+#     # Check student login
+#     if not request.session.has_key('email'):
+#         messages.error(request, 'Please login!')
+#         return redirect('/user_login')
+
+#     # Get logged-in student
+#     email = request.session['email']
+
+#     try:
+#         User = elearning_users.objects.get(email=email)
+#     except elearning_users.DoesNotExist:
+#         messages.error(request, 'Student account not found!')
+#         return redirect('/user_login')
+
+#     # Get live class
+#     try:
+#         live_class = LiveClass.objects.get(id=id)
+#     except LiveClass.DoesNotExist:
+#         messages.error(request, 'Live class not found!')
+#         return redirect('/my_batch')
+
+#     # Check whether student is enrolled in this course
+#     enrolled = my_batch.objects.filter(
+#         user_email=email,
+#         course_id=str(live_class.course.id),
+#         status='Active'
+#     ).exists()
+
+#     if not enrolled:
+#         messages.error(request, 'You are not enrolled in this course!')
+#         return redirect('/my_batch')
+#     # Check live class timing
+#     now = datetime.now()
+
+#     start_datetime = datetime.combine(
+#         live_class.scheduled_date,
+#         live_class.start_time
+#     )
+
+#     end_datetime = datetime.combine(
+#         live_class.scheduled_date,
+#         live_class.end_time
+#     )
+
+#     # Allow joining only while class is live
+#     if not (start_datetime <= now <= end_datetime):
+#         messages.error(
+#             request,
+#             'This live class is not currently running.'
+#         )
+#         return redirect(
+#             '/student_view_batch/' + str(live_class.course.id)
+#         )
+#     return render(
+#         request,
+#         'student_live_class.html',
+#         {
+#             'user': User,
+#             'live_class': live_class
+#         }
+#     )  
 
 def student_live_class(request, id):
 
-    # Check student login
-    if not request.session.has_key('email'):
-        messages.error(request, 'Please login!')
-        return redirect('/user_login')
+    if 'email' not in request.session:
+        return redirect('website_index')
 
-    # Get logged-in student
-    email = request.session['email']
-
-    try:
-        User = elearning_users.objects.get(email=email)
-    except elearning_users.DoesNotExist:
-        messages.error(request, 'Student account not found!')
-        return redirect('/user_login')
-
-    # Get live class
     try:
         live_class = LiveClass.objects.get(id=id)
     except LiveClass.DoesNotExist:
-        messages.error(request, 'Live class not found!')
-        return redirect('/my_batch')
+        return redirect('my_batch')
 
-    # Check whether student is enrolled in this course
-    enrolled = my_batch.objects.filter(
-        user_email=email,
-        course_id=str(live_class.course.id),
-        status='Active'
-    ).exists()
+    room_name = f"EduNovaLive_{live_class.id}"
 
-    if not enrolled:
-        messages.error(request, 'You are not enrolled in this course!')
-        return redirect('/my_batch')
-    # Check live class timing
-    now = datetime.now()
-
-    start_datetime = datetime.combine(
-        live_class.scheduled_date,
-        live_class.start_time
-    )
-
-    end_datetime = datetime.combine(
-        live_class.scheduled_date,
-        live_class.end_time
-    )
-
-    # Allow joining only while class is live
-    if not (start_datetime <= now <= end_datetime):
-        messages.error(
-            request,
-            'This live class is not currently running.'
-        )
-        return redirect(
-            '/student_view_batch/' + str(live_class.course.id)
-        )
     return render(
         request,
         'student_live_class.html',
         {
-            'user': User,
-            'live_class': live_class
+            'live_class': live_class,
+            'room_name': room_name,
         }
-    )  
-
-def generate_student_zego_token(request, id):
-    # Check student login
-    if not request.session.has_key('email'):
-        return JsonResponse({'success': False,'message': 'Please login first.'}, status=401)
-    email = request.session['email']
-    # Get student
-    try:
-        User = elearning_users.objects.get(email=email)
-    except elearning_users.DoesNotExist:
-        return JsonResponse({
-            'success': False,
-            'message': 'Student account not found.'
-        }, status=404)
-
-    # Get live class
-    try:
-        live_class = LiveClass.objects.get(id=id)
-    except LiveClass.DoesNotExist:
-        return JsonResponse({'success': False,'message': 'Live class not found.'}, status=404)
-
-    # Check student enrollment
-    enrolled = my_batch.objects.filter(user_email=email,course_id=str(live_class.course.id),status='Active').exists()
-
-    if not enrolled:
-        return JsonResponse({'success': False,'message': 'You are not enrolled in this course.'}, status=403)
-
-    # Get current time
-    now = datetime.now()
-
-    start_datetime = datetime.combine(
-        live_class.scheduled_date,
-        live_class.start_time
     )
-    end_datetime = datetime.combine(
-        live_class.scheduled_date,
-        live_class.end_time
-    )
-    # Student can join only while class is live
-    if not (start_datetime <= now <= end_datetime):
-        return JsonResponse({
-            'success': False,
-            'message': 'This live class is not currently running.'
-        }, status=403)
-    # ZEGOCLOUD credentials
-    app_id = int(settings.ZEGO_APP_ID)
-    server_secret = settings.ZEGO_SERVER_SECRET
 
-    # Unique student ZEGOCLOUD ID
-    user_id = "student_" + str(User.id)
 
-    user_name = User.name
-
-    # Generate Token04
-    try:
-        token = generate_token04(
-            app_id,
-            user_id,
-            server_secret,
-            3600,
-            ""
-        )
-
-    except Exception as e:
-
-        print("ZEGOCLOUD STUDENT TOKEN ERROR:", e)
-
-        return JsonResponse({
-            'success': False,
-            'message': 'Unable to generate ZEGOCLOUD token.'
-        }, status=500)
-
-    return JsonResponse({
-
-        'success': True,
-
-        'token': token,
-
-        'app_id': app_id,
-
-        # IMPORTANT:
-        # Same room as teacher
-        'room_id': live_class.room_id,
-
-        'user_id': user_id,
-
-        'user_name': user_name
-
-    })    
+ 
