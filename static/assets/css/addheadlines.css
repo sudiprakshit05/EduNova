@@ -1,0 +1,285 @@
+/* ===== EduNova Carousel Headlines ===== */
+.headlines-page {
+    padding: 10px 5px 30px;
+    color: #343650;
+}
+
+.headlines-page .page-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.headlines-page .page-top h3 {
+    font-size: 25px;
+    font-weight: 700;
+    margin: 0 0 7px;
+    color: #292d49;
+}
+
+.headlines-page .page-top p {
+    font-size: 13px;
+    color: #9296aa;
+    margin: 0;
+}
+
+.headlines-page .page-tag {
+    padding: 10px 15px;
+    background: #f0edff;
+    color: #7858df;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.headlines-page .custom-card {
+    background: #fff;
+    border: 1px solid #ececf4;
+    border-radius: 13px;
+    box-shadow: 0 4px 18px rgba(41, 45, 73, 0.04);
+    margin-bottom: 25px;
+    overflow: hidden;
+}
+
+.headlines-page .card-heading {
+    padding: 22px 25px;
+    border-bottom: 1px solid #f0f0f6;
+}
+
+.headlines-page .card-heading h4 {
+    font-size: 17px;
+    font-weight: 700;
+    color: #292d49;
+    margin: 0 0 6px;
+}
+
+.headlines-page .card-heading p {
+    font-size: 12px;
+    color: #9296aa;
+    margin: 0;
+}
+
+.headlines-page .card-content {
+    padding: 25px;
+}
+
+.headlines-page .field-label {
+    display: block;
+    color: #565b76;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 9px;
+}
+
+.headlines-page .form-group {
+    margin-bottom: 22px;
+}
+
+.headlines-page .form-control {
+    height: 46px;
+    border: 1px solid #e5e7f0;
+    border-radius: 8px;
+    background: #fbfbfe;
+    padding: 10px 13px;
+    font-size: 13px;
+    color: #343650;
+    box-shadow: none;
+}
+
+.headlines-page .form-control:focus {
+    border-color: #8064e9;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(128, 100, 233, 0.09);
+}
+
+.headlines-page .form-control::placeholder {
+    color: #a6aabd;
+}
+
+.headlines-page .field-hint {
+    display: block;
+    margin-top: 7px;
+    font-size: 11px;
+    color: #9296aa;
+}
+
+.headlines-page .upload-box {
+    padding: 20px;
+    border: 1px dashed #cfc8f4;
+    border-radius: 10px;
+    background: #faf9ff;
+}
+
+.headlines-page .upload-box .form-control {
+    height: auto;
+    background: #fff;
+    padding: 10px;
+}
+
+.headlines-page .upload-icon {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eee9ff;
+    color: #7858df;
+    font-size: 23px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+}
+
+.headlines-page .form-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.headlines-page .btn-add {
+    border: 0;
+    background: linear-gradient(110deg, #7660e8, #9472ed);
+    color: #fff;
+    padding: 12px 23px;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.headlines-page .btn-add:hover {
+    background: #6b52d6;
+}
+
+.headlines-page .btn-cancel {
+    background: #f2f2f8;
+    color: #666b82;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.headlines-page .btn-cancel:hover {
+    background: #e8e7f2;
+    color: #343650;
+}
+
+.headlines-page .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.headlines-page .headlines-table {
+    width: 100%;
+    min-width: 700px;
+    margin: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.headlines-page .headlines-table thead th {
+    background: #f8f8fc;
+    color: #81869d;
+    padding: 15px 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    border-top: 0;
+    border-bottom: 1px solid #eeeeF5;
+    white-space: nowrap;
+}
+
+.headlines-page .headlines-table tbody td {
+    padding: 17px 20px;
+    font-size: 13px;
+    color: #555b75;
+    vertical-align: middle;
+    border-bottom: 1px solid #f0f0f6;
+    line-height: 1.7;
+}
+
+.headlines-page .headlines-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.headlines-page .headlines-table tbody tr:hover {
+    background: #fcfbff;
+}
+
+.headlines-page .heading-number {
+    display: inline-flex;
+    width: 28px;
+    height: 28px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    background: #f0edff;
+    color: #7858df;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.headlines-page .heading-text {
+    display: block;
+    min-width: 120px;
+    max-width: 300px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    color: #343650;
+    font-weight: 500;
+}
+
+.headlines-page .delete-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 12px;
+    border-radius: 7px;
+    background: #fff0f1;
+    color: #dc5260;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.headlines-page .delete-link:hover {
+    background: #ffe1e4;
+    color: #bd3545;
+}
+
+.headlines-page .empty-state {
+    padding: 35px 15px !important;
+    text-align: center;
+    color: #9296aa !important;
+}
+
+.headlines-page .table-bottom {
+    padding: 14px 22px;
+    border-top: 1px solid #f0f0f6;
+    color: #9296aa;
+    font-size: 12px;
+}
+
+@media (max-width: 767px) {
+    .headlines-page .page-top h3 {
+        font-size: 21px;
+    }
+
+    .headlines-page .card-heading,
+    .headlines-page .card-content {
+        padding: 18px;
+    }
+
+    .headlines-page .form-actions button,
+    .headlines-page .form-actions a {
+        text-align: center;
+    }
+}

@@ -1,83 +1,636 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>EduNova Teachers login</title>
-    <!-- plugins:css -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduNova | Teacher Login</title>
+
     <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/vendors/ti-icons/css/themify-icons.css'%}">
+    <link rel="stylesheet" href="{% static 'assets/vendors/ti-icons/css/themify-icons.css' %}">
     <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
     <link rel="stylesheet" href="{% static 'assets/vendors/font-awesome/css/font-awesome.min.css' %}">
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
-    <!-- endinject -->
-    <!-- Layout styles -->
     <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
-    <!-- End layout styles -->
-    <link rel="shortcut icon" href="{% static 'assets/images/favicon.png' %}" />
+    <link rel="shortcut icon" href="{% static 'assets/images/favicon.png' %}">
 
-  </head>
-  <body>
-    {% if messages %}
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-    {% for message in messages %}
-   <script>alert('{{message}}');</script> 
-    {% endfor %}
-    {% endif %}
-    <div class="container-scroller">
-      <div class="container-fluid page-body-wrapper full-page-wrapper">
-        <div class="content-wrapper d-flex align-items-center auth">
-          <div class="row flex-grow">
-            <div class="col-lg-4 mx-auto">
-              <div class="auth-form-light text-left p-5">
-                <div class="brand-logo">
-                  <h2 class="m-0 text-primary"><i class="fa fa-book me-3"></i>EduNova</h2>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f4f6fc;
+            color: #202b46;
+        }
+
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 35px;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 1100px;
+            min-height: 620px;
+            display: grid;
+            grid-template-columns: 1fr 0.9fr;
+            background: #ffffff;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 70px rgba(36, 48, 89, 0.12);
+        }
+
+        /* Left welcome section */
+
+        .welcome-section {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 55px 48px 40px;
+            color: #ffffff;
+            overflow: hidden;
+            background: linear-gradient(145deg, #4935c9 0%, #6551e8 50%, #8874ff 100%);
+        }
+
+        .welcome-section::before {
+            content: "";
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            right: -130px;
+            top: 100px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 0 0 35px rgba(255,255,255,0.04),
+                        0 0 0 75px rgba(255,255,255,0.035);
+        }
+
+        .welcome-section::after {
+            content: "";
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            bottom: -90px;
+            left: -55px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .brand {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 27px;
+            font-weight: 750;
+            letter-spacing: -0.7px;
+        }
+
+        .brand-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.17);
+            border: 1px solid rgba(255,255,255,0.2);
+            font-size: 26px;
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+            margin-top: 40px;
+            margin-bottom: 40px;
+        }
+
+        .welcome-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 14px;
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 30px;
+            background: rgba(255,255,255,0.1);
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .welcome-content h1 {
+            max-width: 430px;
+            margin: 25px 0 18px;
+            font-size: clamp(34px, 4vw, 47px);
+            line-height: 1.2;
+            font-weight: 750;
+            letter-spacing: -1.5px;
+        }
+
+        .welcome-content h1 span {
+            color: #d8d0ff;
+        }
+
+        .welcome-content p {
+            max-width: 390px;
+            margin: 0;
+            color: rgba(255,255,255,0.82);
+            font-size: 15px;
+            line-height: 1.9;
+        }
+
+        .feature-list {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 17px;
+            margin-top: 30px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            color: rgba(255,255,255,0.94);
+            font-size: 14px;
+        }
+
+        .feature-item i {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 29px;
+            height: 29px;
+            flex-shrink: 0;
+            border-radius: 9px;
+            background: rgba(255,255,255,0.15);
+            font-size: 17px;
+        }
+
+        .welcome-footer {
+            position: relative;
+            z-index: 1;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.72);
+            font-size: 12px;
+        }
+
+        /* Right login section */
+
+        .form-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 55px 48px;
+            background: #ffffff;
+        }
+
+        .login-form-wrapper {
+            width: 100%;
+            max-width: 365px;
+        }
+
+        .mobile-brand {
+            display: none;
+        }
+
+        .form-label-top {
+            margin-bottom: 12px;
+            color: #6a56e8;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1.7px;
+            text-transform: uppercase;
+        }
+
+        .login-heading {
+            margin: 0 0 12px;
+            color: #202b46;
+            font-size: 32px;
+            font-weight: 750;
+            letter-spacing: -1px;
+        }
+
+        .login-subheading {
+            margin: 0 0 35px;
+            color: #8a92a6;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .form-group {
+            margin-bottom: 23px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #303b55;
+            font-size: 13px;
+            font-weight: 650;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            top: 50%;
+            left: 16px;
+            transform: translateY(-50%);
+            color: #929bb0;
+            font-size: 19px;
+            pointer-events: none;
+        }
+
+        .form-control-custom {
+            display: block;
+            width: 100%;
+            height: 54px;
+            padding: 0 45px;
+            border: 1px solid #e4e8f1;
+            border-radius: 11px;
+            outline: none;
+            background: #f9faff;
+            color: #27324b;
+            font-family: inherit;
+            font-size: 14px;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .form-control-custom::placeholder {
+            color: #a6adbd;
+        }
+
+        .form-control-custom:focus {
+            border-color: #7562ec;
+            background: #ffffff;
+        }
+
+        .input-wrapper:focus-within .input-icon {
+            color: #6a56e8;
+        }
+
+        .password-toggle {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            padding: 5px;
+            border: none;
+            background: transparent;
+            color: #929bb0;
+            font-size: 19px;
+            cursor: pointer;
+        }
+
+        .password-toggle:focus-visible {
+            outline: 2px solid #7562ec;
+            border-radius: 5px;
+        }
+
+        .form-options {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin: -4px 0 27px;
+        }
+
+        .forgot-link {
+            color: #6a56e8;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .forgot-link:hover {
+            color: #4935c9;
+            text-decoration: underline;
+        }
+
+        .login-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            height: 55px;
+            border: none;
+            border-radius: 11px;
+            background: linear-gradient(100deg, #5540d5, #7965ed);
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .login-button:hover {
+            background: linear-gradient(100deg, #4430bc, #6650db);
+        }
+
+        .login-button:focus-visible {
+            outline: 3px solid #c9c0ff;
+            outline-offset: 3px;
+        }
+
+        .secure-note {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 7px;
+            margin-top: 25px;
+            color: #969db0;
+            font-size: 12px;
+        }
+
+        .secure-note i {
+            color: #5da98a;
+            font-size: 16px;
+        }
+
+        .message-box {
+            margin-bottom: 23px;
+            padding: 12px 14px;
+            border: 1px solid #f2caca;
+            border-radius: 9px;
+            background: #fff5f5;
+            color: #b42332;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 900px) {
+            .login-page {
+                padding: 24px;
+            }
+
+            .login-container {
+                max-width: 650px;
+                min-height: auto;
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-section {
+                padding: 32px 35px;
+            }
+
+            .welcome-content {
+                margin: 35px 0 25px;
+            }
+
+            .welcome-content h1 {
+                max-width: 500px;
+                font-size: 36px;
+            }
+
+            .feature-list {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .welcome-footer {
+                margin-top: 25px;
+            }
+
+            .form-section {
+                padding: 45px 35px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-page {
+                padding: 12px;
+            }
+
+            .login-container {
+                border-radius: 18px;
+            }
+
+            .welcome-section {
+                padding: 26px 23px;
+            }
+
+            .brand {
+                font-size: 24px;
+            }
+
+            .welcome-content h1 {
+                font-size: 31px;
+            }
+
+            .welcome-content p {
+                font-size: 13px;
+            }
+
+            .feature-list {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .form-section {
+                padding: 36px 23px;
+            }
+
+            .login-heading {
+                font-size: 29px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-page">
+    <div class="login-container">
+
+        <!-- Left Welcome Panel -->
+        <section class="welcome-section">
+
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa fa-book" aria-hidden="true"></i>
                 </div>
-                <h4>Hello! let's get started</h4>
-                <h6 class="font-weight-light">Sign in to continue.</h6>
-                <form  action="/teachers_login" method="POST" class="pt-3" >
-                    {% csrf_token %}
-                  <div class="form-group">
-                    <label for="exampleInputEmail1">Email</label>
-                    <input type="email" class="form-control form-control-lg" id="exampleInputEmail1" placeholder="email" name="email">
-                  </div>
-                  <div class="form-group"> 
-                    <label for="exampleInputPassword1">Password</label>
-                    <input type="password" class="form-control form-control-lg" id="exampleInputPassword1" placeholder="Password" name="password">
-                  </div>
-                  <div class="mt-3 d-grid gap-2">
-                    <input class="btn btn-block btn-gradient-primary btn-lg font-weight-medium auth-form-btn" type="submit" >
-                  </div>
-                  <div class="my-2 d-flex justify-content-between align-items-center">
-                    <a href="#" class="auth-link text-primary">Forgot password?</a>
-                  </div>
-                  </div>
-                </form>
-              </div>
+                <span>EduNova</span>
             </div>
-          </div>
-        </div>
-        <!-- content-wrapper ends -->
-      </div>
-      <!-- page-body-wrapper ends -->
+
+            <div class="welcome-content">
+                <div class="welcome-tag">
+                    <i class="mdi mdi-school-outline"></i>
+                    Teacher Portal
+                </div>
+
+                <h1>
+                    Inspire minds.<br>
+                    Shape the <span>future.</span>
+                </h1>
+
+                <p>
+                    Welcome to your teaching space. Manage your courses,
+                    connect with students, and make every learning moment count.
+                </p>
+
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <i class="mdi mdi-book-open-page-variant-outline"></i>
+                        <span>Manage your courses and batches</span>
+                    </div>
+
+                    <div class="feature-item">
+                        <i class="mdi mdi-account-group-outline"></i>
+                        <span>Keep your students connected</span>
+                    </div>
+
+                    <div class="feature-item">
+                        <i class="mdi mdi-chart-box-outline"></i>
+                        <span>Organize your teaching activities</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="welcome-footer">
+                © {% now "Y" %} EduNova. Empowering education through technology.
+            </div>
+
+        </section>
+
+        <!-- Right Login Panel -->
+        <section class="form-section">
+
+            <div class="login-form-wrapper">
+
+                <div class="mobile-brand">
+                    <h2>EduNova</h2>
+                </div>
+
+                <div class="form-label-top">Teacher Account</div>
+
+                <h2 class="login-heading">Welcome back!</h2>
+
+                <p class="login-subheading">
+                    Sign in with your teacher credentials to continue.
+                </p>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="message-box" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <form action="{% url 'teachers_login' %}" method="POST">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label for="teacherEmail">Email address</label>
+
+                        <div class="input-wrapper">
+                            <i class="mdi mdi-email-outline input-icon"
+                               aria-hidden="true"></i>
+
+                            <input
+                                type="email"
+                                class="form-control-custom"
+                                id="teacherEmail"
+                                name="email"
+                                placeholder="Enter your email address"
+                                autocomplete="username"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="teacherPassword">Password</label>
+
+                        <div class="input-wrapper">
+                            <i class="mdi mdi-lock-outline input-icon"
+                               aria-hidden="true"></i>
+
+                            <input
+                                type="password"
+                                class="form-control-custom"
+                                id="teacherPassword"
+                                name="password"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                            >
+
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                id="togglePassword"
+                                aria-label="Show password"
+                                aria-pressed="false"
+                            >
+                                <i class="mdi mdi-eye-outline"
+                                   id="passwordIcon"
+                                   aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <a href="#" class="forgot-link">
+                            Forgot password?
+                        </a>
+                    </div>
+
+                    <button type="submit" class="login-button">
+                        <span>Sign In to Dashboard</span>
+                        <i class="mdi mdi-arrow-right" aria-hidden="true"></i>
+                    </button>
+
+                </form>
+
+                <div class="secure-note">
+                    <i class="mdi mdi-shield-check-outline"
+                       aria-hidden="true"></i>
+                    Secure access to your teaching dashboard
+                </div>
+
+            </div>
+        </section>
+
     </div>
-    <!-- container-scroller -->
-    <!-- plugins:js -->
-    <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
-    <!-- endinject -->
-    <!-- Plugin js for this page -->
-    <!-- End plugin js for this page -->
-    <!-- inject:js -->
-    <script src="{% static 'assets/js/off-canvas.js' %}"></script>
-    <script src="{% static 'assets/js/misc.js' %}"></script>
-    <script src="{% static 'assets/js/settings.js' %}"></script>
-    <script src="{% static 'assets/js/todolist.js' %}"></script>
-    <script src="{% static 'assets/js/jquery.cookie.js' %}"></script>
-    <!-- endinject -->
-  </body>
+</div>
+
+<script>
+    const passwordInput = document.getElementById('teacherPassword');
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordIcon = document.getElementById('passwordIcon');
+
+    togglePassword.addEventListener('click', function () {
+        const isPassword = passwordInput.type === 'password';
+
+        passwordInput.type = isPassword ? 'text' : 'password';
+
+        passwordIcon.className = isPassword
+            ? 'mdi mdi-eye-off-outline'
+            : 'mdi mdi-eye-outline';
+
+        togglePassword.setAttribute('aria-label',
+            isPassword ? 'Hide password' : 'Show password');
+
+        togglePassword.setAttribute('aria-pressed',
+            isPassword ? 'true' : 'false');
+    });
+</script>
+
+</body>
 </html>

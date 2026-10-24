@@ -3,44 +3,599 @@
 
 {% block content %}
 
-<div class="row">
-    <div class="col-lg-12 grid-margin stretch-card">
-        <div class="card">
-        <div class="card-body">
-            <h4 class="card-title">All Teachers</h4>
-        
-            <table class="table table-striped">
-            <thead>
-                <tr>
-                
-                <th>name</th>
-                <th> phone no. </th>
-                    <th> email </th>
-                    
-                <th> photo</th>
-                    <th> Edit</th>
-                <th>Delete</th>
-                <th>assign course</th>
-                </tr>
-            </thead>
-                {% for i in Teacher %}
-                <tr>
-                        <td>{{i.name}}</td>
-                        <td>{{i.phone}}</td>
-                        <td>{{i.email}}</td>
-                        
-                        <td><img src="media/{{i.file}}" alt="" width="100px" height="100px"></td>
-                        <td><a href="addteachers_edit/{{i.id}}">edit</a></td>
-                        <td><a href="addteachers_delete/{{i.id}}">Delete</a></td>
-                        <td><a href="course_assign/{{i.id}}">Assign</a></td>
-                    </tr>
-                {% endfor %}
-            
-            
-            </table>
+<style>
+    .teachers-page {
+        padding: 8px 0 25px;
+        color: #25304b;
+    }
+
+    .teachers-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+    }
+
+    .teachers-heading h3 {
+        margin: 0 0 8px;
+        color: #202b46;
+        font-size: 25px;
+        font-weight: 700;
+    }
+
+    .teachers-heading p {
+        margin: 0;
+        color: #8992a8;
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .header-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 15px;
+        border-radius: 10px;
+        background: #eef2ff;
+        color: #4f46e5;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .teacher-summary {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+        margin-bottom: 25px;
+    }
+
+    .summary-card {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 22px;
+        border: 1px solid #edf0f7;
+        border-radius: 14px;
+        background: #ffffff;
+        box-shadow: 0 4px 16px rgba(35, 48, 80, 0.035);
+    }
+
+    .summary-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 49px;
+        height: 49px;
+        flex-shrink: 0;
+        border-radius: 13px;
+        font-size: 23px;
+    }
+
+    .summary-icon.purple {
+        background: #f0edff;
+        color: #7457e8;
+    }
+
+    .summary-icon.blue {
+        background: #eaf3ff;
+        color: #3679dc;
+    }
+
+    .summary-icon.orange {
+        background: #fff2e6;
+        color: #e58b35;
+    }
+
+    .summary-label {
+        margin-bottom: 5px;
+        color: #8992a8;
+        font-size: 12px;
+    }
+
+    .summary-value {
+        color: #25304b;
+        font-size: 21px;
+        font-weight: 750;
+    }
+
+    .teachers-table-card {
+        overflow: hidden;
+        border: 1px solid #edf0f7;
+        border-radius: 15px;
+        background: #ffffff;
+        box-shadow: 0 5px 22px rgba(35, 48, 80, 0.045);
+    }
+
+    .table-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 23px 25px;
+        flex-wrap: wrap;
+        border-bottom: 1px solid #edf0f7;
+    }
+
+    .table-card-heading h4 {
+        margin: 0 0 6px;
+        color: #25304b;
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    .table-card-heading p {
+        margin: 0;
+        color: #929bb0;
+        font-size: 12px;
+    }
+
+    .teacher-search {
+        position: relative;
+        width: 290px;
+        max-width: 100%;
+    }
+
+    .teacher-search i {
+        position: absolute;
+        top: 50%;
+        left: 13px;
+        transform: translateY(-50%);
+        color: #929bb0;
+        font-size: 17px;
+    }
+
+    .teacher-search input {
+        width: 100%;
+        height: 43px;
+        padding: 0 13px 0 39px;
+        border: 1px solid #e3e8f1;
+        border-radius: 9px;
+        outline: none;
+        background: #fbfcff;
+        color: #25304b;
+        font-size: 12px;
+    }
+
+    .teacher-search input:focus {
+        border-color: #8b7cf6;
+        background: #ffffff;
+    }
+
+    .teacher-table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .teacher-table {
+        width: 100%;
+        min-width: 950px;
+        margin: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .teacher-table thead th {
+        padding: 16px 18px;
+        border: none;
+        border-bottom: 1px solid #edf0f7;
+        background: #f8f9fd;
+        color: #778198;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        white-space: nowrap;
+    }
+
+    .teacher-table tbody td {
+        padding: 17px 18px;
+        border: none;
+        border-bottom: 1px solid #f0f2f7;
+        background: #ffffff;
+        color: #4d5870;
+        font-size: 12px;
+        vertical-align: middle;
+    }
+
+    .teacher-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .teacher-table tbody tr:hover td {
+        background: #fafbff;
+    }
+
+    .teacher-profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 155px;
+    }
+
+    .teacher-avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 46px;
+        height: 46px;
+        flex-shrink: 0;
+        overflow: hidden;
+        border: 2px solid #eef0ff;
+        border-radius: 50%;
+        background: #f0edff;
+        color: #6954d9;
+        font-size: 18px;
+    }
+
+    .teacher-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .teacher-name {
+        color: #25304b;
+        font-size: 12px;
+        font-weight: 700;
+        overflow-wrap: anywhere;
+    }
+
+    .teacher-email {
+        min-width: 180px;
+        overflow-wrap: anywhere;
+        color: #69758c !important;
+    }
+
+    .teacher-phone {
+        white-space: nowrap;
+    }
+
+    .action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        min-height: 34px;
+        padding: 8px 11px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 600;
+        text-decoration: none !important;
+        white-space: nowrap;
+        transition: background 0.15s, border-color 0.15s;
+    }
+
+    .action-edit {
+        border-color: #dce8ff;
+        background: #eff5ff;
+        color: #346dcc !important;
+    }
+
+    .action-edit:hover {
+        border-color: #b9d1ff;
+        background: #e2edff;
+    }
+
+    .action-delete {
+        border-color: #ffdddd;
+        background: #fff1f1;
+        color: #d64545 !important;
+    }
+
+    .action-delete:hover {
+        border-color: #ffc5c5;
+        background: #ffe4e4;
+    }
+
+    .action-assign {
+        border-color: #d8f2e5;
+        background: #eafaf2;
+        color: #21865a !important;
+    }
+
+    .action-assign:hover {
+        border-color: #b8e8d0;
+        background: #ddf5e8;
+    }
+
+    .action-btn i {
+        font-size: 15px;
+    }
+
+    .empty-state {
+        padding: 45px 20px !important;
+        text-align: center;
+        color: #929bb0 !important;
+    }
+
+    .empty-state i {
+        display: block;
+        margin-bottom: 12px;
+        color: #b5bed0;
+        font-size: 34px;
+    }
+
+    .empty-state strong {
+        display: block;
+        margin-bottom: 5px;
+        color: #4d5870;
+        font-size: 14px;
+    }
+
+    .table-footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 16px 25px;
+        border-top: 1px solid #edf0f7;
+        background: #ffffff;
+        color: #929bb0;
+        font-size: 11px;
+        flex-wrap: wrap;
+    }
+
+    @media (max-width: 992px) {
+        .teacher-summary {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 576px) {
+        .teachers-heading h3 {
+            font-size: 22px;
+        }
+
+        .teacher-summary {
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .summary-card {
+            padding: 17px;
+        }
+
+        .table-card-header {
+            padding: 19px;
+        }
+
+        .teacher-search {
+            width: 100%;
+        }
+
+        .table-footer {
+            padding: 15px 19px;
+        }
+    }
+</style>
+
+<div class="teachers-page">
+
+    <!-- Page heading -->
+    <div class="teachers-header">
+        <div class="teachers-heading">
+            <h3>Teacher Management</h3>
+            <p>Manage teacher profiles, update details, and assign courses.</p>
         </div>
+
+        <div class="header-badge">
+            <i class="mdi mdi-account-group-outline"></i>
+            EduNova Administration
         </div>
     </div>
+
+    <!-- Summary cards -->
+    <div class="teacher-summary">
+
+        <div class="summary-card">
+            <div class="summary-icon purple">
+                <i class="mdi mdi-account-multiple-outline"></i>
+            </div>
+
+            <div>
+                <div class="summary-label">Total Teachers</div>
+                <div class="summary-value">{{ Teacher|length }}</div>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-icon blue">
+                <i class="mdi mdi-account-edit-outline"></i>
+            </div>
+
+            <div>
+                <div class="summary-label">Profile Management</div>
+                <div class="summary-value">Edit</div>
+            </div>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-icon orange">
+                <i class="mdi mdi-book-open-page-variant-outline"></i>
+            </div>
+
+            <div>
+                <div class="summary-label">Course Management</div>
+                <div class="summary-value">Assign</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Teachers table -->
+    <div class="teachers-table-card">
+
+        <div class="table-card-header">
+
+            <div class="table-card-heading">
+                <h4>All Teachers</h4>
+                <p>View and manage registered teacher accounts.</p>
+            </div>
+
+            <div class="teacher-search">
+                <i class="mdi mdi-magnify"></i>
+
+                <input
+                    type="search"
+                    id="teacherSearch"
+                    placeholder="Search name, phone or email..."
+                    aria-label="Search teachers"
+                >
+            </div>
+
+        </div>
+
+        <div class="teacher-table-wrapper">
+            <table class="teacher-table">
+
+                <thead>
+                    <tr>
+                        <th>Teacher</th>
+                        <th>Phone Number</th>
+                        <th>Email Address</th>
+                        <th>Photo</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                        <th>Assign Course</th>
+                    </tr>
+                </thead>
+
+                <tbody id="teacherTableBody">
+
+                    {% for i in Teacher %}
+                    <tr class="teacher-row">
+
+                        <td>
+                            <div class="teacher-profile">
+                                <div class="teacher-avatar">
+                                    {% if i.file %}
+                                        <img
+                                            src="{{ i.file.url }}"
+                                            alt="{{ i.name }}"
+                                            loading="lazy"
+                                        >
+                                    {% else %}
+                                        <i class="mdi mdi-account-outline"></i>
+                                    {% endif %}
+                                </div>
+
+                                <span class="teacher-name">{{ i.name }}</span>
+                            </div>
+                        </td>
+
+                        <td class="teacher-phone">
+                            {{ i.phone }}
+                        </td>
+
+                        <td class="teacher-email">
+                            {{ i.email }}
+                        </td>
+
+                        <td>
+                            {% if i.file %}
+                                <a href="{{ i.file.url }}" target="_blank" rel="noopener noreferrer"
+                                   class="action-btn action-edit">
+                                    <i class="mdi mdi-image-outline"></i>
+                                    View Photo
+                                </a>
+                            {% else %}
+                                <span style="color: #929bb0;">No photo</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <a href="addteachers_edit/{{ i.id }}"
+                               class="action-btn action-edit">
+                                <i class="mdi mdi-pencil-outline"></i>
+                                Edit
+                            </a>
+                        </td>
+
+                        <td>
+                            <a href="addteachers_delete/{{ i.id }}"
+                               class="action-btn action-delete"
+                               onclick="return confirm('Are you sure you want to delete this teacher?');">
+                                <i class="mdi mdi-trash-can-outline"></i>
+                                Delete
+                            </a>
+                        </td>
+
+                        <td>
+                            <a href="course_assign/{{ i.id }}"
+                               class="action-btn action-assign">
+                                <i class="mdi mdi-book-plus-outline"></i>
+                                Assign Course
+                            </a>
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <i class="mdi mdi-account-search-outline"></i>
+                            <strong>No teachers found</strong>
+                            Teacher accounts will appear here when available.
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                    <tr id="noSearchResults" style="display: none;">
+                        <td colspan="7" class="empty-state">
+                            <i class="mdi mdi-magnify"></i>
+                            <strong>No matching teachers</strong>
+                            Try searching with another name, phone number, or email.
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+        <div class="table-footer">
+            <span id="teacherCount">
+                Showing {{ Teacher|length }} teacher(s)
+            </span>
+
+            <span>EduNova · Teacher Administration</span>
+        </div>
+
+    </div>
+
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("teacherSearch");
+        const rows = Array.from(document.querySelectorAll(".teacher-row"));
+        const noResults = document.getElementById("noSearchResults");
+        const countLabel = document.getElementById("teacherCount");
+
+        function filterTeachers() {
+            const query = searchInput.value.trim().toLowerCase();
+            let visibleCount = 0;
+
+            rows.forEach(function (row) {
+                const matches = row.textContent.toLowerCase().includes(query);
+
+                row.style.display = matches ? "" : "none";
+
+                if (matches) {
+                    visibleCount++;
+                }
+            });
+
+            noResults.style.display =
+                rows.length > 0 && visibleCount === 0 ? "" : "none";
+
+            countLabel.textContent =
+                "Showing " + visibleCount + " of " + rows.length + " teacher(s)";
+        }
+
+        searchInput.addEventListener("input", filterTeachers);
+    });
+</script>
 
 {% endblock %}

@@ -126,7 +126,11 @@ def admin_logout(request):
     messages.success(request,'logout successfully')
     return redirect('/')
 def addcoursetype(request):
+    if not request.session.get('adminemail'):
+        messages.error(request, 'Please login first')
+        return redirect('adminlogin')
     coursetype1=coursetype.objects.all()
+    admin=Elearningadmin.objects.get(email=request.session['adminemail'])
     if(request.method=='POST'):
         name=request.POST['name']
         file=request.FILES['file']
@@ -135,14 +139,21 @@ def addcoursetype(request):
         messages.success(request,'added successfully')
         return redirect('/addcoursetype')
     else:    
-        return render(request,'addcoursetype.html',{'coursetype':coursetype1})
+        return render(request,'addcoursetype.html',{'coursetype':coursetype1,'admin':admin})
 
 def addcoursetype_delete(request,id): 
+    if not request.session.get('adminemail'):
+        messages.error(request, 'Please login first')
+        return redirect('adminlogin')
     coursetype1=coursetype.objects.get(id=id)  
     coursetype1.delete()  
     return redirect('/addcoursetype')
 
 def addcoursetype_edit(request,id):
+    if not request.session.get('adminemail'):
+        messages.error(request, 'Please login first')
+        return redirect('adminlogin')
+    admin=Elearningadmin.objects.get(email=request.session['adminemail'])
     coursetype1=coursetype.objects.get(id=id)
     if(request.method=="POST"):
         name=request.POST['name']
@@ -153,7 +164,7 @@ def addcoursetype_edit(request,id):
         messages.success(request,'edited successfull')
         return redirect('/addcoursetype')
     else:
-        return render(request,'addcoursetype_edit.html',{'coursetype':coursetype1})
+        return render(request,'addcoursetype_edit.html',{'coursetype':coursetype1,'admin':admin})
 
 def addcourse(request):
     if not request.session.get('adminemail'):

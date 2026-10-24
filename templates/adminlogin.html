@@ -1,81 +1,511 @@
+
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
+<head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Purple Admin</title>
-    <!-- plugins:css -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>EduNova | Admin Login</title>
+
     <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}">
-    <link rel="stylesheet" href="{% static 'assets/vendors/ti-icons/css/themify-icons.css'%}">
-    <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
     <link rel="stylesheet" href="{% static 'assets/vendors/font-awesome/css/font-awesome.min.css' %}">
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
-    <!-- endinject -->
-    <!-- Layout styles -->
-    <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
-    <!-- End layout styles -->
-    <link rel="shortcut icon" href="{% static 'assets/images/favicon.png' %}" />
 
-  </head>
-  <body>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f4f8fc;
+            color: #18233b;
+        }
+
+        .admin-login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 35px;
+        }
+
+        .admin-login-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: 100%;
+            max-width: 1080px;
+            min-height: 630px;
+            background: #fff;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 70px rgba(24, 35, 59, 0.10);
+        }
+
+        /* Left welcome panel */
+
+        .admin-login-welcome {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 48px;
+            overflow: hidden;
+            background: linear-gradient(145deg, #08bdca, #078eaa);
+            color: #fff;
+        }
+
+        .admin-login-welcome::before,
+        .admin-login-welcome::after {
+            content: "";
+            position: absolute;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .admin-login-welcome::before {
+            width: 330px;
+            height: 330px;
+            right: -140px;
+            top: 110px;
+        }
+
+        .admin-login-welcome::after {
+            width: 440px;
+            height: 440px;
+            right: -190px;
+            top: 55px;
+        }
+
+        .admin-brand {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .admin-brand-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 13px;
+            background: #fff;
+            color: #06aebb;
+            font-size: 27px;
+        }
+
+        .admin-brand h1 {
+            font-size: 29px;
+            font-weight: 750;
+            letter-spacing: -0.8px;
+            color: #fff;
+        }
+
+        .admin-welcome-content {
+            position: relative;
+            z-index: 1;
+            margin: 60px 0;
+        }
+
+        .admin-welcome-tag {
+            display: inline-block;
+            padding: 8px 13px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            margin-bottom: 25px;
+        }
+
+        .admin-welcome-content h2 {
+            max-width: 390px;
+            font-size: 42px;
+            font-weight: 750;
+            line-height: 1.2;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        .admin-welcome-content p {
+            max-width: 365px;
+            color: rgba(255, 255, 255, 0.88);
+            font-size: 15px;
+            line-height: 1.9;
+        }
+
+        .admin-welcome-feature {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-top: 23px;
+            border-top: 1px solid rgba(255, 255, 255, 0.25);
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .admin-welcome-feature i {
+            font-size: 21px;
+        }
+
+        /* Right login panel */
+
+        .admin-login-form-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 55px 50px;
+            background: #fff;
+        }
+
+        .admin-login-form-inner {
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .admin-login-heading {
+            margin-bottom: 35px;
+        }
+
+        .admin-login-heading .small-label {
+            display: block;
+            color: #08aebb;
+            font-size: 12px;
+            font-weight: 750;
+            letter-spacing: 1.8px;
+            margin-bottom: 13px;
+        }
+
+        .admin-login-heading h2 {
+            font-size: 32px;
+            font-weight: 750;
+            letter-spacing: -0.7px;
+            color: #18233b;
+            margin-bottom: 12px;
+        }
+
+        .admin-login-heading p {
+            color: #7a8497;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .admin-login-form .form-group {
+            margin-bottom: 23px;
+        }
+
+        .admin-login-form label {
+            display: block;
+            color: #303b50;
+            font-size: 13px;
+            font-weight: 650;
+            margin-bottom: 10px;
+        }
+
+        .admin-input-wrapper {
+            position: relative;
+        }
+
+        .admin-input-wrapper > i {
+            position: absolute;
+            top: 50%;
+            left: 16px;
+            transform: translateY(-50%);
+            color: #8b96a8;
+            font-size: 19px;
+            pointer-events: none;
+        }
+
+        .admin-login-form input[type="email"],
+        .admin-login-form input[type="password"] {
+            width: 100%;
+            height: 53px;
+            padding: 0 15px 0 47px;
+            border: 1px solid #e1e7ef;
+            border-radius: 10px;
+            background: #fbfcfe;
+            color: #18233b;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .admin-login-form input:focus {
+            border-color: #08b7c5;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(8, 183, 197, 0.10);
+        }
+
+        .admin-login-form input::placeholder {
+            color: #a2aaba;
+        }
+
+        .admin-login-options {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: -4px;
+            margin-bottom: 25px;
+        }
+
+        .admin-login-options a {
+            color: #079eae;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .admin-login-options a:hover {
+            text-decoration: underline;
+        }
+
+        .admin-login-submit {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            min-height: 54px;
+            border: none;
+            border-radius: 10px;
+            background: #08b7c5;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .admin-login-submit:hover {
+            background: #079cab;
+        }
+
+        .admin-login-submit i {
+            font-size: 18px;
+        }
+
+        .admin-login-security {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 7px;
+            margin-top: 26px;
+            color: #8a94a5;
+            font-size: 12px;
+        }
+
+        .admin-login-security i {
+            color: #08aebb;
+            font-size: 16px;
+        }
+
+        .admin-login-copyright {
+            margin-top: 38px;
+            text-align: center;
+            color: #a0a8b6;
+            font-size: 12px;
+        }
+
+        /* Tablet and mobile */
+
+        @media (max-width: 850px) {
+            .admin-login-page {
+                padding: 22px;
+            }
+
+            .admin-login-container {
+                max-width: 560px;
+                grid-template-columns: 1fr;
+            }
+
+            .admin-login-welcome {
+                min-height: 280px;
+                padding: 30px;
+            }
+
+            .admin-welcome-content {
+                margin: 38px 0 25px;
+            }
+
+            .admin-welcome-content h2 {
+                font-size: 32px;
+            }
+
+            .admin-welcome-content p {
+                font-size: 14px;
+            }
+
+            .admin-welcome-feature {
+                display: none;
+            }
+
+            .admin-login-form-panel {
+                padding: 40px 30px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .admin-login-page {
+                padding: 12px;
+            }
+
+            .admin-login-container {
+                border-radius: 16px;
+            }
+
+            .admin-login-welcome {
+                min-height: 245px;
+                padding: 25px;
+            }
+
+            .admin-brand h1 {
+                font-size: 25px;
+            }
+
+            .admin-welcome-content {
+                margin: 30px 0 5px;
+            }
+
+            .admin-welcome-content h2 {
+                font-size: 28px;
+            }
+
+            .admin-login-form-panel {
+                padding: 35px 24px;
+            }
+
+            .admin-login-heading h2 {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
     {% if messages %}
-
-    {% for message in messages %}
-   <script>alert('{{message}}');</script> 
-    {% endfor %}
+        {% for message in messages %}
+            <script>
+                alert("{{ message|escapejs }}");
+            </script>
+        {% endfor %}
     {% endif %}
-    <div class="container-scroller">
-      <div class="container-fluid page-body-wrapper full-page-wrapper">
-        <div class="content-wrapper d-flex align-items-center auth">
-          <div class="row flex-grow">
-            <div class="col-lg-4 mx-auto">
-              <div class="auth-form-light text-left p-5">
-                <div class="brand-logo">
-                  <h2 class="m-0 text-primary"><i class="fa fa-book me-3"></i>EduNova</h2>
+
+    <main class="admin-login-page">
+        <div class="admin-login-container">
+
+            <!-- Welcome Panel -->
+            <section class="admin-login-welcome">
+
+                <div class="admin-brand">
+                    <div class="admin-brand-icon">
+                        <i class="fa fa-book"></i>
+                    </div>
+                    <h1>EduNova</h1>
                 </div>
-                <h4>Hello! let's get started</h4>
-                <h6 class="font-weight-light">Sign in to continue.</h6>
-                <form  action="/adminlogin" method="POST" class="pt-3" >
-                    {% csrf_token %}
-                  <div class="form-group">
-                    <input type="email" class="form-control form-control-lg" id="exampleInputEmail1" placeholder="email" name="adminemail">
-                  </div>
-                  <div class="form-group"> 
-                    <input type="password" class="form-control form-control-lg" id="exampleInputPassword1" placeholder="Password" name="password">
-                  </div>
-                  <div class="mt-3 d-grid gap-2">
-                    <input class="btn btn-block btn-gradient-primary btn-lg font-weight-medium auth-form-btn" type="submit" >
-                  </div>
-                  <div class="my-2 d-flex justify-content-between align-items-center"> 
-                    <a href="#" class="auth-link text-primary">Forgot password?</a>
-                  </div>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
+
+                <div class="admin-welcome-content">
+                    <span class="admin-welcome-tag">
+                        ADMINISTRATION PORTAL
+                    </span>
+
+                    <h2>Manage learning. Inspire growth.</h2>
+
+                    <p>
+                        Welcome to your EduNova administration workspace.
+                        Sign in to manage your e-learning platform and keep
+                        everything running smoothly.
+                    </p>
+                </div>
+
+                <div class="admin-welcome-feature">
+                    <i class="mdi mdi-shield-check-outline"></i>
+                    <span>A dedicated workspace for platform administration</span>
+                </div>
+
+            </section>
+
+            <!-- Login Form -->
+            <section class="admin-login-form-panel">
+                <div class="admin-login-form-inner">
+
+                    <div class="admin-login-heading">
+                        <span class="small-label">WELCOME BACK</span>
+                        <h2>Admin Login</h2>
+                        <p>Enter your credentials to access your dashboard.</p>
+                    </div>
+
+                    <form action="/adminlogin"
+                          method="POST"
+                          class="admin-login-form">
+
+                        {% csrf_token %}
+
+                        <div class="form-group">
+                            <label for="adminemail">Email address</label>
+
+                            <div class="admin-input-wrapper">
+                                <i class="mdi mdi-email-outline"></i>
+
+                                <input
+                                    type="email"
+                                    id="adminemail"
+                                    name="adminemail"
+                                    placeholder="Enter your admin email"
+                                    autocomplete="username"
+                                    required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="adminpassword">Password</label>
+
+                            <div class="admin-input-wrapper">
+                                <i class="mdi mdi-lock-outline"></i>
+
+                                <input
+                                    type="password"
+                                    id="adminpassword"
+                                    name="password"
+                                    placeholder="Enter your password"
+                                    autocomplete="current-password"
+                                    required>
+                            </div>
+                        </div>
+
+                        <div class="admin-login-options">
+                            <a href="#">Forgot password?</a>
+                        </div>
+
+                        <button type="submit" class="admin-login-submit">
+                            Sign In
+                            <i class="mdi mdi-arrow-right"></i>
+                        </button>
+
+                    </form>
+
+                    <div class="admin-login-security">
+                        <i class="mdi mdi-shield-lock-outline"></i>
+                        <span>Secure administrator access</span>
+                    </div>
+
+                    <div class="admin-login-copyright">
+                        &copy; {% now "Y" %} EduNova. All rights reserved.
+                    </div>
+
+                </div>
+            </section>
+
         </div>
-        <!-- content-wrapper ends -->
-      </div>
-      <!-- page-body-wrapper ends -->
-    </div>
-    <!-- container-scroller -->
-    <!-- plugins:js -->
-    <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
-    <!-- endinject -->
-    <!-- Plugin js for this page -->
-    <!-- End plugin js for this page -->
-    <!-- inject:js -->
-    <script src="{% static 'assets/js/off-canvas.js' %}"></script>
-    <script src="{% static 'assets/js/misc.js' %}"></script>
-    <script src="{% static 'assets/js/settings.js' %}"></script>
-    <script src="{% static 'assets/js/todolist.js' %}"></script>
-    <script src="{% static 'assets/js/jquery.cookie.js' %}"></script>
-    <!-- endinject -->
-  </body>
+    </main>
+
+</body>
 </html>

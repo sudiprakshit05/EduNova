@@ -7,8 +7,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>EduNova admin</title>
     <!-- plugins:css -->
+     <link rel="stylesheet" href="{% static 'assets/css/addheadlines.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/addteachers.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/admin_viewalldetails_teachers.css' %}">
     <link rel="stylesheet" href="{% static 'assets/css/my_batch.css' %}">
-     <link rel="stylesheet" href="{% static 'assets/css/update_profile.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/update_profile.css' %}">
     <link rel="stylesheet" href="{% static 'assets/vendors/mdi/css/materialdesignicons.min.css' %}">
     <link rel="stylesheet" href="{% static 'assets/vendors/ti-icons/css/themify-icons.css' %}">
     <link rel="stylesheet" href="{% static 'assets/vendors/css/vendor.bundle.base.css' %}">
@@ -203,6 +206,12 @@
               <a class="nav-link" href="{% url 'admindashboard' %}">
                 <span class="menu-title">Dashboard</span>
                 <i class="mdi mdi-home menu-icon"></i>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'addcoursetype' %}">
+                <span class="menu-title">Add Coursetype</span>
+                <i class="mdi mdi-account-circle menu-icon"></i>
               </a>
             </li>
             <li class="nav-item">

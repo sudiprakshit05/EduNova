@@ -1,0 +1,240 @@
+/* ===== Add Teachers Page ===== */
+.teacher-page {
+    padding: 10px 5px 30px;
+    color: #343a55;
+}
+
+.teacher-page .page-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.teacher-page .page-heading h3 {
+    font-size: 25px;
+    font-weight: 700;
+    margin: 0 0 7px;
+    color: #292d49;
+}
+
+.teacher-page .page-heading p {
+    color: #8b90a7;
+    font-size: 13px;
+    margin: 0;
+}
+
+.teacher-page .heading-tag {
+    background: #f0edff;
+    color: #7356df;
+    padding: 9px 15px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.teacher-page .teacher-card {
+    background: #ffffff;
+    border: 1px solid #ececf4;
+    border-radius: 13px;
+    box-shadow: 0 4px 18px rgba(41, 45, 73, 0.04);
+    margin-bottom: 25px;
+    overflow: hidden;
+}
+
+.teacher-page .card-heading {
+    padding: 23px 25px 18px;
+    border-bottom: 1px solid #f0f0f6;
+}
+
+.teacher-page .card-heading h4 {
+    font-size: 17px;
+    font-weight: 700;
+    margin: 0 0 6px;
+    color: #292d49;
+}
+
+.teacher-page .card-heading p {
+    font-size: 12px;
+    color: #9297aa;
+    margin: 0;
+}
+
+.teacher-page .card-content {
+    padding: 25px;
+}
+
+.teacher-page .section-label {
+    display: block;
+    color: #656b85;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.teacher-page .form-group {
+    margin-bottom: 21px;
+}
+
+.teacher-page .form-control {
+    height: 46px;
+    border: 1px solid #e5e7f0;
+    border-radius: 8px;
+    background-color: #fbfbfe;
+    padding: 10px 13px;
+    font-size: 13px;
+    color: #343a55;
+    box-shadow: none;
+    transition: border-color 0.2s;
+}
+
+.teacher-page .form-control:focus {
+    border-color: #8064e9;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(128, 100, 233, 0.09);
+}
+
+.teacher-page input[type="file"].form-control {
+    height: auto;
+    min-height: 46px;
+    padding: 9px;
+}
+
+.teacher-page .form-control::placeholder {
+    color: #a6aabd;
+}
+
+.teacher-page .form-note {
+    display: block;
+    font-size: 11px;
+    color: #9297aa;
+    margin-top: 7px;
+}
+
+.teacher-page .submit-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 23px;
+    background: linear-gradient(110deg, #7660e8, #9472ed);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.teacher-page .submit-btn:hover {
+    background: #6b52d6;
+}
+
+.teacher-page .table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.teacher-page .teacher-table {
+    width: 100%;
+    min-width: 650px;
+    margin: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.teacher-page .teacher-table thead th {
+    background: #f8f8fc;
+    color: #81869d;
+    padding: 15px 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-top: 0;
+    border-bottom: 1px solid #eeeeF5;
+    white-space: nowrap;
+}
+
+.teacher-page .teacher-table tbody td {
+    padding: 15px 20px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f0f0f6;
+    color: #555b75;
+    font-size: 13px;
+}
+
+.teacher-page .teacher-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.teacher-page .teacher-table tbody tr:hover {
+    background: #fcfbff;
+}
+
+.teacher-page .teacher-avatar {
+    width: 43px;
+    height: 43px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 1px solid #ededf5;
+    background: #f4f2ff;
+}
+
+.teacher-page .teacher-name {
+    color: #30344f;
+    font-weight: 600;
+}
+
+.teacher-page .teacher-email {
+    color: #858aa1;
+    font-size: 12px;
+}
+
+.teacher-page .delete-btn {
+    display: inline-block;
+    padding: 7px 12px;
+    background: #fff0f0;
+    color: #e05260;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.teacher-page .delete-btn:hover {
+    background: #ffe1e3;
+    color: #c93747;
+}
+
+.teacher-page .empty-state {
+    text-align: center;
+    padding: 35px 15px !important;
+    color: #9297aa !important;
+}
+
+.teacher-page .table-footer {
+    padding: 15px 22px;
+    background: #fff;
+    border-top: 1px solid #f0f0f6;
+    color: #9297aa;
+    font-size: 12px;
+}
+
+@media (max-width: 767px) {
+    .teacher-page .page-heading h3 {
+        font-size: 21px;
+    }
+
+    .teacher-page .card-heading,
+    .teacher-page .card-content {
+        padding: 18px;
+    }
+
+    .teacher-page .submit-btn {
+        width: 100%;
+    }
+}
