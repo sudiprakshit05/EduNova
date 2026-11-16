@@ -14,6 +14,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from datetime import timedelta
 from django.http import FileResponse
+from django.contrib.auth.hashers import make_password
 
 
 import requests
@@ -324,6 +325,7 @@ def join_now(request):
         email=request.POST['email']
         phone=request.POST['phone'].strip()  # Remove leading and trailing whitespace from the phone number 
         password=request.POST['password']
+        confirm_password=request.POST['confirm_password']
         school_college=request.POST['school_college']
         address=request.POST['address']
 
@@ -348,6 +350,11 @@ def join_now(request):
                 "Please enter a valid 10-digit Indian mobile number."
             )
             return redirect("join_now")
+
+        if password != confirm_password:
+            messages.error(request, "Password & confirm password do not match.")
+            return redirect("join_now")
+        
         # Check if email already exists
         if elearning_users.objects.filter(email=email).exists():
             messages.error(request, "Email already registered.")
@@ -360,6 +367,7 @@ def join_now(request):
         request.session['reg_email'] = email
         request.session['reg_phone'] = phone
         request.session['reg_password'] = password
+        request.session['reg_confirm_password'] = confirm_password
         request.session['reg_school'] = school_college
         request.session['reg_address'] = address
         request.session['register_otp'] = otp
@@ -396,6 +404,7 @@ def joining_otp_verification(request):
             email = request.session.get("reg_email")
             phone = request.session.get("reg_phone")
             password = request.session.get("reg_password")
+            confirm_password = request.session.get("reg_confirm_password")
             school_college = request.session.get("reg_school")
             address=request.session.get("reg_address")
             # Create a new user in the database
@@ -403,7 +412,8 @@ def joining_otp_verification(request):
                 name=name,
                 email=email,
                 phone=phone,
-                password=password,
+                password=make_password(password),  # Hash the password before saving
+                #confirm_password=make_password(confirm_password),  # Hash the confirm password before saving
                 school_college=school_college,
                 address=address
             )
@@ -1130,6 +1140,9 @@ def student_view_batch(request, id):
             course_id=id,
             status='Active'
         ).first()
+         # Block students who are not actively enrolled
+        if batch is None:
+            return redirect('/My_Batch')
 
         # Get live classes for this course
         live_classes = LiveClass.objects.filter(

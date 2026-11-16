@@ -48,7 +48,7 @@ class headlines(models.Model):
 
 class elearning_users(models.Model):
     name=models.CharField(max_length=50)
-    email=models.EmailField(max_length=100)
+    email = models.EmailField(unique=True)
     phone=models.IntegerField(default=0)
     password=models.CharField(max_length=50)
     confirm_password=models.CharField(max_length=50,default='')   

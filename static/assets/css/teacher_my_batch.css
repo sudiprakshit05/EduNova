@@ -1,0 +1,141 @@
+
+.batch-wrapper {
+    padding: 25px;
+}
+
+.batch-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.batch-header h3 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #f1f1f4;
+    margin: 0;
+}
+
+.batch-header p {
+    color: #888;
+    font-size: 14px;
+    margin: 6px 0 0;
+}
+
+.batch-count {
+    background: #f0ebff;
+    color: #6c4ce6;
+    padding: 9px 17px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.batch-card {
+    background: #fff;
+    border: 1px solid #e9e7f1;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 25px;
+    height: calc(100% - 25px);
+    transition: none !important;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.035);
+}
+
+.batch-card:hover {
+    transform: none !important;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.035) !important;
+}
+
+.batch-image {
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+    display: block;
+}
+
+.batch-card-body {
+    padding: 20px;
+}
+
+.batch-label {
+    display: inline-block;
+    background: #f0ebff;
+    color: #7654e8;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+.batch-card-body h5 {
+    font-size: 17px;
+    font-weight: 700;
+    color: #292b3a;
+    margin-bottom: 18px;
+    min-height: 24px;
+}
+
+.batch-view-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 11px;
+    background: #7654e8;
+    color: #fff !important;
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none !important;
+    border: none;
+    transition: none !important;
+}
+
+.batch-view-btn:hover {
+    background: #7654e8 !important;
+    color: #fff !important;
+    transform: none !important;
+}
+
+.empty-batch {
+    background: #fff;
+    border: 1px dashed #d8d3e8;
+    border-radius: 12px;
+    padding: 55px 20px;
+    text-align: center;
+    width: 100%;
+}
+
+.empty-batch i {
+    font-size: 42px;
+    color: #a18be9;
+    margin-bottom: 15px;
+}
+
+.empty-batch h5 {
+    color: #292b3a;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.empty-batch p {
+    color: #888;
+    font-size: 14px;
+    margin: 0;
+}
+
+@media(max-width: 576px) {
+    .batch-wrapper {
+        padding: 15px;
+    }
+
+    .batch-image {
+        height: 180px;
+    }
+}

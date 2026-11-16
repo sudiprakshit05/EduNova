@@ -5,179 +5,202 @@
 
 <div class="main-panel">
     <div class="content-wrapper">
+        <div class="test-page">
 
-        <div class="card">
-            <div class="card-body">
+            <!-- Header -->
+            <div class="test-header">
+                <div>
+                    <h3>Create Practice Test</h3>
+                    <p>Set up a new assessment for {{ batche.name }}</p>
+                </div>
 
-                <h4 class="card-title">
-                    {{ batche.name }}
-                </h4>
+                <div class="test-header-icon">
+                    <i class="mdi mdi-clipboard-text-outline"></i>
+                </div>
+            </div>
 
-                <p class="card-description">
-                    Create test for {{ batche.name }}
-                </p>
+            <!-- Form Card -->
+            <div class="test-card">
 
-                <form method="post">
-
+                <form method="post" class="test-form">
                     {% csrf_token %}
 
-                    <!-- Test Title -->
-                    <div class="form-group">
-                        <label>Test Title</label>
-
-                        <input
-                            type="text"
-                            name="title"
-                            class="form-control"
-                            placeholder="Enter test title"
-                            required>
-                    </div>
-
-
-                    <!-- Description -->
-                    <div class="form-group">
-                        <label>Description</label>
-
-                        <textarea
-                            name="description"
-                            class="form-control"
-                            rows="4"
-                            placeholder="Enter test description"></textarea>
-                    </div>
-
-
-                    <!-- Start Date -->
-                    <div class="form-group">
-                        <label>Start Date</label>
-
-                        <input
-                            type="date"
-                            name="start_date"
-                            class="form-control"
-                            required>
-                    </div>
-
-
-                    <!-- Start Time -->
-                    <div class="form-group">
-                        <label>Start Time</label>
-
-                        <div class="d-flex">
-
-                            <input
-                                type="text"
-                                name="start_time"
-                                class="form-control"
-                                placeholder="HH:MM"
-                                pattern="^(0?[1-9]|1[0-2]):[0-5][0-9]$"
-                                required>
-
-                            <select
-                                name="start_ampm"
-                                class="form-control"
-                                style="max-width: 100px; margin-left: 10px;"
-                                required>
-
-                                <option value="AM">AM</option>
-                                <option value="PM">PM</option>
-
-                            </select>
-
+                    <!-- Test Details -->
+                    <div class="section-heading">
+                        <div class="section-icon">
+                            <i class="mdi mdi-file-document-edit-outline"></i>
+                        </div>
+                        <div>
+                            <h5>Test Information</h5>
+                            <small>Enter the basic details of your test</small>
                         </div>
                     </div>
 
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Test Title *</label>
+                                <input type="text"
+                                       name="title"
+                                       class="form-control"
+                                       placeholder="e.g. Python Programming Test"
+                                       required>
+                            </div>
+                        </div>
 
-                    <!-- End Date -->
-                    <div class="form-group">
-                        <label>End Date</label>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Created By</label>
+                                <input type="text"
+                                       class="form-control created-by"
+                                       value="{{ Teacher.name }}"
+                                       readonly>
+                            </div>
+                        </div>
 
-                        <input
-                            type="date"
-                            name="end_date"
-                            class="form-control"
-                            required>
-                    </div>
-
-
-                    <!-- End Time -->
-                    <div class="form-group">
-                        <label>End Time</label>
-
-                        <div class="d-flex">
-
-                            <input
-                                type="text"
-                                name="end_time"
-                                class="form-control"
-                                placeholder="HH:MM"
-                                pattern="^(0?[1-9]|1[0-2]):[0-5][0-9]$"
-                                required>
-
-                            <select
-                                name="end_ampm"
-                                class="form-control"
-                                style="max-width: 100px; margin-left: 10px;"
-                                required>
-
-                                <option value="AM">AM</option>
-                                <option value="PM">PM</option>
-
-                            </select>
-
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea name="description"
+                                          class="form-control"
+                                          rows="3"
+                                          placeholder="Write a short description about this test..."></textarea>
+                            </div>
                         </div>
                     </div>
 
+                    <div class="form-divider"></div>
+
+                    <!-- Schedule -->
+                    <div class="section-heading">
+                        <div class="section-icon">
+                            <i class="mdi mdi-calendar-clock-outline"></i>
+                        </div>
+                        <div>
+                            <h5>Test Schedule</h5>
+                            <small>Set when students can access the test</small>
+                        </div>
+                    </div>
+
+                    <div class="row">
+
+                        <!-- Start Date -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Start Date *</label>
+                                <input type="date"
+                                       name="start_date"
+                                       class="form-control"
+                                       required>
+                            </div>
+                        </div>
+
+                        <!-- Start Time -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Start Time *</label>
+                                <div class="time-input">
+                                    <input type="text"
+                                           name="start_time"
+                                           class="form-control"
+                                           placeholder="HH:MM"
+                                           pattern="^(0?[1-9]|1[0-2]):[0-5][0-9]$"
+                                           title="Enter time in 12-hour format, e.g. 09:30"
+                                           required>
+
+                                    <select name="start_ampm"
+                                            class="form-control"
+                                            required>
+                                        <option value="AM">AM</option>
+                                        <option value="PM">PM</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- End Date -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>End Date *</label>
+                                <input type="date"
+                                       name="end_date"
+                                       class="form-control"
+                                       required>
+                            </div>
+                        </div>
+
+                        <!-- End Time -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>End Time *</label>
+                                <div class="time-input">
+                                    <input type="text"
+                                           name="end_time"
+                                           class="form-control"
+                                           placeholder="HH:MM"
+                                           pattern="^(0?[1-9]|1[0-2]):[0-5][0-9]$"
+                                           title="Enter time in 12-hour format, e.g. 10:30"
+                                           required>
+
+                                    <select name="end_ampm"
+                                            class="form-control"
+                                            required>
+                                        <option value="AM">AM</option>
+                                        <option value="PM">PM</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="form-divider"></div>
 
                     <!-- Duration -->
-                    <div class="form-group">
-                        <label>Duration (Minutes)</label>
-
-                        <input
-                            type="number"
-                            name="duration"
-                            class="form-control"
-                            placeholder="Enter duration in minutes"
-                            min="1"
-                            required>
-                    </div>
-                    <!-- Created By -->
-                    <div class="form-group">
-                        <label>Created By</label>
-
-                        <input
-                            type="text"
-                            class="form-control"
-                            value="{{ Teacher.name }}"
-                            readonly>
+                    <div class="section-heading">
+                        <div class="section-icon">
+                            <i class="mdi mdi-timer-outline"></i>
+                        </div>
+                        <div>
+                            <h5>Test Duration</h5>
+                            <small>Specify the time allowed to complete the test</small>
+                        </div>
                     </div>
 
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Duration (Minutes) *</label>
+                                <input type="number"
+                                       name="duration"
+                                       class="form-control"
+                                       placeholder="e.g. 60"
+                                       min="1"
+                                       required>
+                            </div>
+                        </div>
+                    </div>
 
-                    <!-- Submit -->
-                    <button
-                        type="submit"
-                        class="btn btn-gradient-primary me-2">
+                    <!-- Buttons -->
+                    <div class="form-divider"></div>
 
-                        Create Test
+                    <div class="form-actions">
+                        <a href="{% url 'teacher_view_batch' batche.id %}"
+                           class="btn btn-cancel">
+                            Cancel
+                        </a>
 
-                    </button>
-
-
-                    <!-- Cancel -->
-                    <a
-                        href="{% url 'teacher_view_batch' batche.id %}"
-                        class="btn btn-light">
-
-                        Cancel
-
-                    </a>
+                        <button type="submit" class="btn btn-create">
+                            <i class="mdi mdi-check-circle-outline"></i>
+                            Create Test
+                        </button>
+                    </div>
 
                 </form>
 
             </div>
         </div>
-
     </div>
 </div>
 
 {% endblock %}
-
