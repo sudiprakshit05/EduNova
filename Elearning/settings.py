@@ -28,14 +28,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG') == 'True'
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
+
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY is missing. Please configure it in your .env file.")
 
 ALLOWED_HOSTS = [
+    "dip2005.pythonanywhere.com",
     "127.0.0.1",
     "localhost",
     "tuition-recycled-felt-tip.ngrok-free.dev",
     ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://dip2005.pythonanywhere.com',
+]
 
 # Application definition
 
@@ -128,12 +135,16 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static')
+    BASE_DIR / 'static',
 ]
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 
 MEDIA_URL = '/media/'  # URL prefix for media files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 # Django Email Configuration for sending emails using Gmail's SMTP server 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' # Use SMTP backend for sending emails 
