@@ -1091,7 +1091,7 @@ def My_Batch(request):
                 course_list.append(c)
             except course.DoesNotExist: # Handle the case where the course with the given ID does not exist 
                 pass
-        return render(request, 'My_Batch.html', {'ename':ename,'my_batches':batches,'courses':course_list, 'user': user})
+        return render(request, 'my_batch.html', {'ename':ename,'my_batches':batches,'courses':course_list, 'user': user})
     else:
         messages.success(request,'please login!')
         return redirect('/user_login')
