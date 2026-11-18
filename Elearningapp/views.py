@@ -1078,7 +1078,7 @@ def user_dashboard(request):
         return redirect('/user_login')
 
 
-def My_Batch(request):
+def my_batch(request):
     if request.session.has_key('email'):
         eid=request.session['email']# Get the email of the logged-in user from the session 
         user=elearning_users.objects.get(email=eid)# Retrieve the user object based on the email
